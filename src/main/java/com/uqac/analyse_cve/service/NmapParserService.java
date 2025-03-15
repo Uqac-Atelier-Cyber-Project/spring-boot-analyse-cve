@@ -1,49 +1,33 @@
 package com.uqac.analyse_cve.service;
 
 
-import com.uqac.analyse_cve.model.HostScanResult;
-import com.uqac.analyse_cve.model.PortInfo;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.uqac.analyse_cve.model.Host;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
+/**
+ * Service pour parser un fichier XML généré par Nmap et extraire les hôtes scannés.
+ */
 @Service
 public class NmapParserService {
+    private final XmlMapper xmlMapper;
 
-    public List<HostScanResult> parseNmapXml(String xmlPath) {
-        List<HostScanResult> results = new ArrayList<>();
-        /*
+    public NmapParserService() {
+        this.xmlMapper = new XmlMapper();
+    }
+
+    public List<Host> parseNmapXml(String xmlPath) {
         try {
-
-            SAXReader reader = new SAXReader();
-            Document document = reader.read(new File(xmlPath));
-            List<Element> hosts = document.getRootElement().elements("host");
-
-            for (Element host : hosts) {
-                String ip = host.element("address").attributeValue("addr");
-                List<PortInfo> ports = new ArrayList<>();
-
-                Element portsElement = host.element("ports");
-                if (portsElement != null) {
-                    for (Element portElement : portsElement.elements("port")) {
-                        String port = portElement.attributeValue("portid");
-                        String protocol = portElement.attributeValue("protocol");
-                        Element serviceElement = portElement.element("service");
-                        String name = serviceElement.attributeValue("name");
-                        String version = serviceElement.attributeValue("version");
-
-                        ports.add(new PortInfo(Integer.parseInt(port), protocol, name, version));
-                    }
-                }
-
-                results.add(new HostScanResult(ip, ports));
-            }
-
-        } catch (Exception e) {
+            // Lire le fichier XML et le mapper en liste d'objets Host
+            File xmlFile = new File(xmlPath);
+            // Mapper l'XML en objets Host
+            return xmlMapper.readValue(xmlFile, xmlMapper.getTypeFactory().constructCollectionType(List.class, Host.class));
+        } catch (IOException e) {
             throw new RuntimeException("Erreur lors du parsing XML Nmap", e);
-        }*/
-        return results;
+        }
     }
 }

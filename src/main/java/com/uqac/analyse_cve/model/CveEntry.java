@@ -1,5 +1,8 @@
 package com.uqac.analyse_cve.model;
 
+/**
+ * Représente une entrée de vulnérabilité
+ */
 public class CveEntry {
     private String id;
     private String description;

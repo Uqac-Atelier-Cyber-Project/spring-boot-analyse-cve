@@ -13,6 +13,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service qui trouve des CVE à partir des données collectées sur le réseau
+ */
 @Service
 public class CveLookupService {
 
@@ -35,6 +38,13 @@ public class CveLookupService {
             System.err.println("[CVE Scheduler] Erreur lors du téléchargement de la base CVE : " + e.getMessage());
         }
     }
+
+    /**
+     *
+     * @param product : nom du service
+     * @param version : version
+     * @return cves : liste des cve concernées par le service et la version
+     */
     public List<CveEntry> findCvesForService(String product, String version) {
         List<CveEntry> cves = new ArrayList<>();
         try {
