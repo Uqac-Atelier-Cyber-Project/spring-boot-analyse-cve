@@ -21,7 +21,8 @@ public class NmapPort {
         this.cves = cves;
     }
 
-    public List<CveEntry> getCves() {
-        return cves;
+    @Override
+    public String toString() {
+        return (this.portid+" "+this.state.state+" "+this.service+" "+this.cves.toString());
     }
 }

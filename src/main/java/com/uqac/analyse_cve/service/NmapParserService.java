@@ -20,6 +20,10 @@ public class NmapParserService {
         this.xmlMapper = new XmlMapper();
     }
 
+    /**
+     * @param xmlPath : destination du xml généré par le nmap
+     * @return
+     */
     public List<Host> parseNmapXml(String xmlPath) {
         try {
             // Lire le fichier XML et le mapper en liste d'objets Host

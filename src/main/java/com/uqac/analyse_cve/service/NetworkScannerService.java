@@ -1,5 +1,6 @@
 package com.uqac.analyse_cve.service;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,6 +13,7 @@ public class NetworkScannerService {
      * @param target : cible du nmap (domaine ou adresse réseau)
      * @return un XML qui résume les ports trouvés avec les noms des services et leur versions
      */
+
     public String runNmapScan(String target) {
         try {
             ProcessBuilder pb = new ProcessBuilder("nmap", "-sV", "-oX", "nmap_result.xml", target);
