@@ -22,7 +22,7 @@ Ce projet est une application Spring Boot qui analyse les vulnérabilités CVE (
 
 1. Clonez le dépôt :
    ```bash
-   git clone https://github.com/votre-utilisateur/spring-boot-analyse-cve.git
+   git clone https://github.com/Uqac-Atelier-Cyber-Project/spring-boot-analyse-cve.git
    cd spring-boot-analyse-cve
    ```
 
