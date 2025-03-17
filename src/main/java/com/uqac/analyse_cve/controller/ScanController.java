@@ -59,11 +59,19 @@ public class ScanController {
         List<Host> cveHosts = new ArrayList<>();
         for (Host host : hosts) {
             for (NmapPort port : host.ports) {
-                port.setCves(cveService.findCvesForService(port.service.toString(), port.service.version));
-                Host cveHost= Host.builder().address(host.address).build();
-                cveHost.ports.add(port);
+                // Vérification que port.service n'est pas null avant de l'utiliser
+                if (port.service != null && port.service.name != null && port.service.version != null) {
+                    // Recherche des CVEs pour le service du port
+                    port.setCves(cveService.findCvesForService(port.service.name, port.service.version));
 
-                cveHosts.add(host);
+                    // Création d'un nouvel objet Host pour ce port avec les CVEs
+                    Host cveHost = new Host(host.address);
+                    cveHost.ports.add(port);
+                    cveHosts.add(cveHost);
+                } else {
+                    // Optionnel: Log ou gestion d'erreur si port.service est null
+                    logger.warn("Port service est null pour l'hôte " + host.address);
+                }
             }
         }
 

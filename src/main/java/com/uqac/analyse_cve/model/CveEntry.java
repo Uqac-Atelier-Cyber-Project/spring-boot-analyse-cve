@@ -9,8 +9,21 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@Builder
 public class CveEntry {
     private String id;
     private String description;
+
+    public CveEntry() {
+        id="";
+        description="";
+    }
+
+    public CveEntry(String id, String description) {
+        this.id = id;
+        this.description = description;
+    }
+    @Override
+    public String toString() {
+        return "CveEntry [id=" + id+"], " ;
+    }
 }
