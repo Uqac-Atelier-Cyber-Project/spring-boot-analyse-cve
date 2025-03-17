@@ -1,18 +1,14 @@
-package com.uqac.analyse_cve.controller;
+package com.uqac.analyse_cve.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.uqac.analyse_cve.DTO.ResponseRequest;
 import com.uqac.analyse_cve.DTO.ServiceRequest;
 import com.uqac.analyse_cve.model.Host;
 import com.uqac.analyse_cve.model.NmapPort;
-import com.uqac.analyse_cve.service.CveLookupService;
-import com.uqac.analyse_cve.service.NetworkScannerService;
-import com.uqac.analyse_cve.service.NmapParserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,17 +18,14 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import com.uqac.analyse_cve.DTO.*;
-
-
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-@RestController
-@RequestMapping("/scan")
-public class ScanController {
+@Service
+public class FunctionnalSystemService {
 
+    private final static Logger logger = LoggerFactory.getLogger(FunctionnalSystemService.class);
     @Autowired
     private NetworkScannerService scanner;
 
@@ -41,38 +34,39 @@ public class ScanController {
 
     @Autowired
     private CveLookupService cveService;
-
-    @PostMapping("/target")
-    public String scan(@RequestBody ServiceRequest request) throws JsonProcessingException {
-        scanInitService(request);
-        return "CVE Scan launched";
-    }
-
     /**
      * Init Service Scan
+     *
      * @param request Request
      */
     @Async
-    protected void scanInitService(ServiceRequest request) throws JsonProcessingException {
-        String xmlPath = scanner.runNmapScan(request.getOption());
-        List<Host> hosts = parser.parseNmapXml(xmlPath);
-        List<Host> cveHosts = new ArrayList<>();
-        for (Host host : hosts) {
-            for (NmapPort port : host.ports) {
-                port.setCves(cveService.findCvesForService(port.service.toString(), port.service.version));
-                Host cveHost= Host.builder().address(host.address).build();
-                cveHost.ports.add(port);
+    public void scanInitService(ServiceRequest request) throws JsonProcessingException {
+        logger.info("Start scan service");
 
-                cveHosts.add(host);
+        List<Host> cveHosts = new ArrayList<>();
+        try {
+            String xmlPath = scanner.runNmapScan(request.getOption());
+            List<Host> hosts = parser.parseNmapXml(xmlPath);
+            for (Host host : hosts) {
+                for (NmapPort port : host.ports) {
+                    port.setCves(cveService.findCvesForService(port.service.toString(), port.service.version));
+                    Host cveHost = Host.builder().address(host.address).build();
+                    cveHost.ports.add(port);
+
+                    cveHosts.add(host);
+                }
             }
+        } catch (Exception e) {
+            logger.error("Error during scan service: {}", e.getMessage());
         }
 
-        callExternalService(request.getReportId(), cveHosts );
+        callExternalService(request.getReportId(), cveHosts);
     }
 
     /**
      * Appelle un service externe pour envoyer le résultat du scan
-     * @param scanId Identifiant du scan
+     *
+     * @param scanId   Identifiant du scan
      * @param cveHosts Résultat du scan
      * @throws JsonProcessingException Exception lors de la conversion en JSON
      */
@@ -98,5 +92,6 @@ public class ScanController {
             logger.error("Server error while posting scan result: {}", e.getMessage());
         }
     }
+
 
 }
