@@ -34,6 +34,12 @@ import java.util.List;
 @RequestMapping("/scan")
 public class ScanController {
 
+    /**
+     * Logger
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ScanController.class);
+
+
     @Autowired
     private FunctionnalSystemService functionnalSystemService;
 
