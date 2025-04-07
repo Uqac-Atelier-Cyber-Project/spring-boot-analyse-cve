@@ -1,5 +1,7 @@
 package com.uqac.analyse_cve.service;
 
+import com.uqac.analyse_cve.DTO.ApiProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -20,6 +22,10 @@ import java.io.File;
  */
 @Service
 public class NetworkScannerService {
+
+    @Autowired
+    private ApiProperties apiProperties;
+
     /**
      *
      * @param target : cible du nmap (domaine ou adresse réseau)
@@ -28,7 +34,12 @@ public class NetworkScannerService {
 
     public String runNmapScan(String target) {
         try {
-            ProcessBuilder pb = new ProcessBuilder("Nmap", "-sV", "-oX", "nmap_result.xml", target);
+            ProcessBuilder pb;
+            if (apiProperties.getIsWindows()) {
+                pb = new ProcessBuilder("Nmap", "-sV", "-oX", "nmap_result.xml", target);
+            } else {
+                pb = new ProcessBuilder("nmap", "-sV", "-oX", "nmap_result.xml", target);
+            }
             Process process = pb.start();
             process.waitFor();
 

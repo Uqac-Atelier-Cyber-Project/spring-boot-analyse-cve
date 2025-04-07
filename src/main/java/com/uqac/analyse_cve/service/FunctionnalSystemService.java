@@ -3,6 +3,7 @@ package com.uqac.analyse_cve.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uqac.analyse_cve.DTO.ApiProperties;
 import com.uqac.analyse_cve.DTO.ResponseRequest;
 import com.uqac.analyse_cve.DTO.ServiceRequest;
 import com.uqac.analyse_cve.model.Host;
@@ -30,6 +31,9 @@ public class FunctionnalSystemService {
     private final static Logger logger = LoggerFactory.getLogger(FunctionnalSystemService.class);
     @Autowired
     private NetworkScannerService scanner;
+
+    @Autowired
+    private ApiProperties apiProperties;
 
     @Autowired
     private NmapParserService parser;
@@ -87,7 +91,7 @@ public class FunctionnalSystemService {
                 .collect(Collectors.joining(", ")));
 
         RestTemplate restTemplate = new RestTemplate();
-        String externalServiceUrl = "http://localhost:8090/report/analysisCVE";
+        String externalServiceUrl = apiProperties.getUrl() + "/report/analysisCVE";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
