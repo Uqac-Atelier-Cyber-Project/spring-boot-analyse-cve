@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Représente un hôte scanné dans le rapport Nmap.
@@ -24,7 +25,9 @@ public class Host {
     @JacksonXmlElementWrapper(localName = "ports")
     @JacksonXmlProperty(localName = "port")
     public List<NmapPort> ports;
-
+    public Host() {
+        this.ports = new ArrayList<NmapPort>();
+    }
 
     /**
      * Builder
@@ -34,11 +37,21 @@ public class Host {
         this.address = address;
         this.ports = new ArrayList<NmapPort>();
     }
-    public Host(){
-        this.ports=new ArrayList<NmapPort>();
-    }
     @Override
     public String toString() {
-        return (this.address+": \n"+ this.ports.toString());
+        return "Host{" +
+                "addresses=" + address +
+                ", ports=" + ports +
+                '}';
+    }
+    public String toJson() {
+        StringBuilder json = new StringBuilder();
+        json.append("{");
+        json.append("\"address\":").append(address.toJson()).append(",");
+        json.append("\"ports\":[").append(ports.stream()
+                .map(NmapPort::toJson)
+                .collect(Collectors.joining(","))).append("]");
+        json.append("}");
+        return json.toString();
     }
 }

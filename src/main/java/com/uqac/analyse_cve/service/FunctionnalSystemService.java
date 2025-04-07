@@ -2,6 +2,7 @@ package com.uqac.analyse_cve.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uqac.analyse_cve.DTO.ResponseRequest;
 import com.uqac.analyse_cve.DTO.ServiceRequest;
 import com.uqac.analyse_cve.model.Host;
@@ -21,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FunctionnalSystemService {
@@ -80,7 +82,9 @@ public class FunctionnalSystemService {
      */
     private void callExternalService(String scanId, List<Host> cveHosts) throws JsonProcessingException {
 
-        logger.info(cveHosts.toString());
+        logger.info(cveHosts.stream()
+                .map(Host::toJson)
+                .collect(Collectors.joining(", ")));
 
         RestTemplate restTemplate = new RestTemplate();
         String externalServiceUrl = "http://localhost:8090/report/analysisCVE";
@@ -90,7 +94,10 @@ public class FunctionnalSystemService {
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         ResponseRequest scanResult = ResponseRequest.builder().reportId(scanId).cvehosts(cveHosts).build();
-
+        logger.info(scanResult.toString());
+        ObjectMapper mapper = new ObjectMapper();
+        String json = mapper.writeValueAsString(scanResult);
+        logger.info("Payload envoyé : " + json);
         HttpEntity<ResponseRequest> entity = new HttpEntity<>(scanResult, headers);
         try {
             restTemplate.postForObject(externalServiceUrl, entity, Void.class);

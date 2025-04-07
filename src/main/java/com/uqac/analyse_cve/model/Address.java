@@ -19,14 +19,16 @@ public class Address {
         addrtype = "";
     }
 
+
     @Override
     public String toString() {
-        if (addrtype != null && ip != null) {
-            return (addrtype + " : " + ip + "\n");
-        } else {
-            return "";
-        }
-
+        return "Address{" +
+                "type='" + addrtype + '\'' +
+                ", addr='" + ip + '\'' +
+                '}';
+    }
+    public String toJson() {
+        return "\"" + this.toString() + "\""; // Assuming Address has a proper toString method
     }
 }
 

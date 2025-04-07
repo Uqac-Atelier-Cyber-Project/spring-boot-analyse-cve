@@ -24,14 +24,13 @@ public class NmapParserService {
      * @param xmlPath : destination du xml généré par le nmap
      * @return
      */
-    public List<Host> parseNmapXml(String xmlPath) {
-        try {
-            // Lire le fichier XML et le mapper en liste d'objets Host
-            File xmlFile = new File(xmlPath);
-            // Mapper l'XML en objets Host
-            return xmlMapper.readValue(xmlFile, xmlMapper.getTypeFactory().constructCollectionType(List.class, Host.class));
-        } catch (IOException e) {
-            throw new RuntimeException("Erreur lors du parsing XML Nmap", e);
-        }
+    public List<Host> parseNmapXml(String xmlPath) throws IOException {
+
+        // Lire le fichier XML et le mapper en liste d'objets Host
+        File xmlFile = new File(xmlPath);
+        // Mapper l'XML en objets Host
+        return xmlMapper.readValue(xmlFile, xmlMapper.getTypeFactory().constructCollectionType(List.class, Host.class));
+
     }
 }
+
